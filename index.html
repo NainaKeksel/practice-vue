@@ -16,7 +16,7 @@
             <p>Корзина({{ cart.length }})</p>
         </div>
         <product :premium="premium" @add-to-cart="updateCart" @remove-from-cart="eraseCart"></product>
-        <product-details></product-details><product-review @review-submitted="addReview"></product-review>
+        <product-details></product-details>
     </div>
 </body>
 </html>
