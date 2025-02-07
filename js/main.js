@@ -131,16 +131,7 @@ template: `
        <a v-bind:href="link">Похожее</a>    
    </div>           
    <div>
-        <h2>Reviews</h2>
-        <p v-if="!reviews.length">Отзывов нет.</p>
-        <ul>
-          <li v-for="review in reviews">
-          <p>{{ review.name }}</p>
-          <p>Рейтинг: {{ review.rating }}</p>
-          <p>{{ review.review }}</p>
-          </li>
-        </ul>
-       </div><product-tabs :reviews="reviews"></product-tabs>
+       <product-tabs :reviews="reviews"></product-tabs>
    </div>
 `,
 data() {
