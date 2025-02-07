@@ -23,10 +23,17 @@ Vue.component('product', {
                 <br>
                 <a v-bind:href="link">Похожее</a>
             </div>
-            <p>Премиум-аккаунт: {{ premium }}</p>
-            <div class="cart">
-                <p>Корзина({{ cart }})</p>
-            </div>
+            <div>
+            <h2>Reviews</h2>
+            <p v-if="!reviews.length">There are no reviews yet.</p>
+            <ul>
+              <li v-for="review in reviews">
+              <p>{{ review.name }}</p>
+              <p>Rating: {{ review.rating }}</p>
+              <p>{{ review.review }}</p>
+              </li>
+            </ul>
+           </div> <product-review @review-submitted="addReview"></product-review>
        </div>`,
     data() {
         return {
@@ -58,7 +65,8 @@ Vue.component('product', {
                 },
             ],
             sizes: ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
-            cart: 0,
+            cart: [],
+            reviews: []
         }
     },
     props: {
@@ -69,10 +77,13 @@ Vue.component('product', {
     },
     methods: {
         addToCart() {
-            this.cart += 1
+            this.$emit('remove-from-cart',
+                this.variants[this.selectedVariant].variantId);
         },
         removeFromCart(index) {
-            this.cart -= 1
+            this.$emit('remove-from-cart',
+            this.variants[this.selectedVariant].variantId);
+
         },
         updateProduct(index) {
             this.selectedVariant = index;
@@ -100,6 +111,78 @@ Vue.component('product', {
         }
     },
 })
+Vue.component('product-review', {
+    template: `
+       <form class="review-form" @submit.prevent="onSubmit">
+       <p v-if="errors.length">
+             <b>Please correct the following error(s):</b>
+             <ul>
+               <li v-for="error in errors">{{ error }}</li>
+             </ul>
+       </p>
+         <p>
+           <label for="name">Имя:</label>
+           <input id="name" v-model="name" placeholder="name">
+         </p>
+        
+         <p>
+           <label for="review"Отзыв:</label>
+           <textarea id="review" v-model="review"></textarea>
+         </p>
+         <p>
+           <label for="rating">Рейтинг:</label>
+           <select id="rating" v-model.number="rating">
+             <option>5</option>
+             <option>4</option>
+             <option>3</option>
+             <option>2</option>
+             <option>1</option>
+           </select>
+         </p>
+         <p>
+           <label class="rec">Смогли бы вы порекоментовать этот товар?</label>
+           <input type="radio" id="rec" name="drone" value="Да" v-model="recommended">
+           <label for="rec">Yes</label>
+           <input type="radio" id="not_rec" name="drone" value="Нет" v-model="recommended">
+           <label for="not_rec">Yesn't</label>
+         </p>
+         <p>
+           <input type="submit" value="Submit"> 
+         </p>
+    
+        </form>
+        
+        
+ `,
+    data() {
+        return {
+            name: null,
+            review: null,
+            rating: null,
+            errors: [],
+            recommended: null,
+        }
+    },
+    methods:{
+        onSubmit() {
+            if(this.name && this.review && this.rating) {
+                let productReview = {
+                    name: this.name,
+                    review: this.review,
+                    rating: this.rating
+                }
+                this.$emit('review-submitted', productReview)
+                this.name = null
+                this.review = null
+                this.rating = null
+            } else {
+                if(!this.name) this.errors.push("Name required.")
+                if(!this.review) this.errors.push("Review required.")
+                if(!this.rating) this.errors.push("Rating required.")
+            }
+        },
+    }
+})
 
 Vue.component('product-details', {
     template: `
@@ -115,8 +198,20 @@ Vue.component('product-details', {
     let app = new Vue({
     el: '#app',
     data: {
-        premium: false
-    }
+        premium: false,
+        cart: []
+    },
+    methods: {
+        addReview(productReview) {
+            this.reviews.push(productReview)
+        },
+        updateCart(id) {
+            this.cart.push(id);
+        },
+        eraseCart(id) {
+            this.cart.pop(id);
+        }
+    },
 })
 
 
