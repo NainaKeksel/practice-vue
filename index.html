@@ -5,14 +5,45 @@
     <meta name="viewport"
     content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
 <meta http-equiv="X-UA-Compatible" content="ie=edge">
+<link rel="stylesheet" href="css/main.css">
 <script defer src="js/vue.min.js"></script>
 <script defer src="js/main.js"></script>
 <title>Product App</title>
 </head>
 <body>
     <div id="app">
-        <h1>{{ product }}</h1>
-        <p>{{description}}</p>
+        <div class="product">
+            <div class="product-image">
+                <img v-bind:alt="altText" v-bind:src="image"/>
+            </div>
+            <div class="product-info">
+                <h1>{{ product }}</h1>
+                <p>{{description}}</p>
+                <span v-show="onSale">Скидка 10%</span>
+                <p v-if="inventory > 10" >В наличии</p>
+                <p v-else-if="inventory <= 10 && inventory > 0" >Почти закончился</p>
+                <p v-else :class="{ OutOfStock:!inStock }">Нет в наличии</p>
+                <ul>
+                    <li v-for="detail in details">{{ detail }}</li>
+                </ul>
+                <div class="color-box" v-for="variant in variants" :key="variant.variantId"
+                     @mouseover="updateProduct(variant.variantImage)" :style="{ backgroundColor:variant.variantColor }">
+                </div>
+    <!--            <select>-->
+    <!--                <option v-for="variant in variants" :key="variant.variantId" @mouseover="updateProduct(variant.variantImage)">{{ variant.variantColor }}</option>-->
+    <!--            </select>-->
+                <select>
+                    <option v-for="size in sizes">{{size}}</option>
+                </select>
+                <button v-on:click="addToCart" :disabled="!inStock" :class="{ disabledButton: !inStock }">Добавить в корзину</button>
+                <button v-on:click="removeFromCart">Удалить из корзины</button>
+                <br>
+                <a v-bind:href="link">Похожее</a>
+            </div>
+            <div class="cart">
+                <p>Корзина({{ cart }})</p>
+            </div>
+        </div>
     </div>
 </body>
 </html>
